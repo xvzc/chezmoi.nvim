@@ -56,10 +56,10 @@ function find.execute(opts)
       results = make_results(target_path, list),
       entry_maker = function(entry)
         return {
-          value = entry,
+          -- entry[1]: relative_path, entry[2]: absolute_path
           ordinal = entry[1],
           display = entry[1],
-          abs_path = entry[2]
+          value = entry[2],
         }
       end
     },
@@ -67,12 +67,13 @@ function find.execute(opts)
       actions.select_default:replace(function()
         actions.close(prompt_bufnr)
         local selection = action_state.get_selected_entry()
-        chezmoi_commands.edit(selection.abs_path, {
+        chezmoi_commands.edit(selection.value, {
           watch = chezmoi_config.watch_on_edit
         })
       end)
       return true
     end,
+    previewer = telescope_config.file_previewer(opts),
     sorter = telescope_config.generic_sorter(opts),
   }):find()
 end
