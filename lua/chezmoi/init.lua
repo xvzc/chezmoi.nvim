@@ -4,16 +4,12 @@ local notify = require("chezmoi.notify")
 local chezmoi = {}
 
 local default_opts = {
+  config_path = nil,
   watch_on_edit = true,
   notification = {
     on_open = true,
     on_save = true,
   },
-  chezmoi = {
-    source = nil,
-    config = nil,
-    destination = nil,
-  }
 }
 
 function chezmoi.setup(opts)

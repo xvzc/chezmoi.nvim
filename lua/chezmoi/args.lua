@@ -7,6 +7,7 @@ args.type = {
   BOOLEAN = 0,
   STRING = 1,
   LIST = 2,
+  SKIP = 3,
 }
 
 local global_args_map = {
@@ -16,7 +17,6 @@ local global_args_map = {
   destination = { "--destination", args.type.STRING },
   dry_run = { "--dry-run", args.type.BOOLEAN },
   force = { "--force", args.type.BOOLEAN },
-  help = { "--help", args.type.BOOLEAN },
   interactive = { "--interactive", args.type.BOOLEAN },
   keep_going = { "--keep-going", args.type.BOOLEAN },
   mode = { "--mode", args.type.STRING },
@@ -34,12 +34,6 @@ local global_args_map = {
   version = { "--version", args.type.BOOLEAN },
   working_tree = { "--working-tree", args.type.STRING },
 }
-
-local function apply_config(opts)
-  opts.config = opts.config or config.chezmoi.config
-  opts.source = opts.source or config.chezmoi.source
-  opts.destination = opts.destination or config.chezmoi.destination
-end
 
 local function parse_targets(targets)
   if not targets then
@@ -70,14 +64,17 @@ local function parse_with_args_map(map, opts)
     elseif map[k] and map[k][2] == args.type.LIST then
       table.insert(parsed_args, map[k][1])
       table.insert(parsed_args, table.concat(v, ","))
+    elseif map[k] and map[k][2] == args.type.SKIP then
+      goto SKIP
     end
+    ::SKIP::
   end
 
   return parsed_args
 end
 
 function args.parse(cmd, targets, map, opts)
-  apply_config(opts)
+  opts.config = opts.config or config.config_path
   local cmd_targets = List.new(parse_targets(targets))
   local cmd_args = List.new(parse_with_args_map(map, opts))
   local global_args = List.new(parse_with_args_map(global_args_map, opts))

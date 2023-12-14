@@ -16,20 +16,20 @@ function apply_cmd.execute(targets, opts)
   opts = opts or {}
   local cmd_args = args.parse("apply", targets, args_map, opts)
 
-  local result = Job:new({
+  local job = Job:new({
     command = "chezmoi",
     args = cmd_args,
     on_stderr = function(_, data)
-      notify.error("apply command returned non 0 exit code:\n" .. data)
+      error("apply command returned non 0 exit code:\n" .. data)
     end,
     on_exit = function(_, _)
       if config.notification.on_save then
         notify.info("Successfully applied")
       end
     end
-  }):sync()
+  })
 
-  return result
+  job:sync()
 end
 
 return apply_cmd

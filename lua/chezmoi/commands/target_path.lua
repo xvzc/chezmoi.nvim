@@ -5,15 +5,18 @@ local notify = require("chezmoi.notify")
 local target_path_cmd = {}
 
 function target_path_cmd.execute(targets, opts)
-  local result = Job:new({
+  opts = opts or {}
+  local job = Job:new({
     command = "chezmoi",
     args = args.parse("target-path", targets, {}, opts),
     on_stderr = function(err, data)
-      notify.error("target-path command returned non 0 exit code:\n" .. data)
+      error("target-path command returned non 0 exit code:\n" .. data)
     end,
-  }):sync()
+  })
 
-  return result
+  job:sync()
+
+  return job:result()
 end
 
 return target_path_cmd

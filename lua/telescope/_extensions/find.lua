@@ -13,6 +13,18 @@ local Path = require("plenary.path")
 
 local find = {}
 
+-- make a list of results that has the following structure
+-- list({ target_path, target_abs_path })
+-- Example:
+-- {
+--   {
+--     ".zshrc",
+--     "/home/username/.zshrc"
+--   }, {
+--     ".config/nvim/init.lua",
+--     "/home/username/.config/nvim/init.lua"
+--   }
+-- }
 local function make_results(target_path, list)
   target_path = Path.new(target_path)
 
@@ -31,6 +43,10 @@ end
 
 function find.execute(opts)
   local target_path = chezmoi_commands.target_path({}, opts)[1]
+  if not target_path then
+    return
+  end
+
   local list = chezmoi_commands.list({
     path_style = "relative"
   })
@@ -51,7 +67,9 @@ function find.execute(opts)
       actions.select_default:replace(function()
         actions.close(prompt_bufnr)
         local selection = action_state.get_selected_entry()
-        chezmoi_commands.edit(selection.abs_path, {})
+        chezmoi_commands.edit(selection.abs_path, {
+          watch = chezmoi_config.watch_on_edit
+        })
       end)
       return true
     end,

@@ -14,15 +14,17 @@ function list_cmd.execute(opts)
   opts = opts or {}
   local cmd_args = args.parse("list", nil, args_map, opts)
 
-  local result = Job:new({
+  local job = Job:new({
     command = "chezmoi",
     args = cmd_args,
     on_stderr = function(_, data)
-      notify.error("list command returned non 0 exit code:\n" .. data)
+      error("list command returned non 0 exit code:\n" .. data)
     end,
-  }):sync()
+  })
 
-  return result
+  job:sync()
+
+  return job:result()
 end
 
 return list_cmd

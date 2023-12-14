@@ -3,4 +3,5 @@ return {
   target_path = require("chezmoi.commands.target_path").execute,
   source_path = require("chezmoi.commands.source_path").execute,
   edit = require("chezmoi.commands.edit").execute,
+  apply = require("chezmoi.commands.apply").execute,
 }
