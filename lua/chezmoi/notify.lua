@@ -1,8 +1,10 @@
 local notify = {}
 
+local plugin = "chezmoi.nvim"
+
 local function plain(text, level, opts)
   opts = opts or {}
-  opts.title = "chezmoi.nvim"
+  opts.title = plugin
   vim.notify(text, level, opts)
 end
 
@@ -16,6 +18,10 @@ end
 
 function notify.warn(text, opts)
   plain(text, vim.log.levels.WARN, opts)
+end
+
+function notify.panic(text)
+  error(plugin .. ": " .. text)
 end
 
 return notify

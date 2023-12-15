@@ -8,12 +8,11 @@ local action_state = require("telescope.actions.state")
 local actions = require("telescope.actions")
 local pickers = require("telescope.pickers")
 local finders = require("telescope.finders")
-local args = require("chezmoi.args")
 local Path = require("plenary.path")
 
 local find = {}
 
--- make a list of results that has the following structure
+-- make a list of results with following structure
 -- list({ target_path, target_abs_path })
 -- Example:
 -- {
@@ -25,7 +24,7 @@ local find = {}
 --     "/home/username/.config/nvim/init.lua"
 --   }
 -- }
-local function make_results(target_path, list)
+function find.__make_entry_list(target_path, list)
   target_path = Path.new(target_path)
 
   local results = {}
@@ -42,18 +41,20 @@ local function make_results(target_path, list)
 end
 
 function find.execute(opts)
-  local target_path = chezmoi_commands.target_path({}, opts)[1]
+  local target_path = chezmoi_commands.target_path({}, opts)
   if not target_path then
     return
   end
 
   local list = chezmoi_commands.list({
-    path_style = "relative"
+    "--path-style",
+    "relative"
   })
+
   pickers.new(opts, {
     prompt_title = "Chezmoi files",
     finder = finders.new_table {
-      results = make_results(target_path, list),
+      results = find.__make_entry_list(target_path[1], list),
       entry_maker = function(entry)
         return {
           -- entry[1]: relative_path, entry[2]: absolute_path
@@ -68,7 +69,7 @@ function find.execute(opts)
         actions.close(prompt_bufnr)
         local selection = action_state.get_selected_entry()
         chezmoi_commands.edit(selection.value, {
-          watch = chezmoi_config.watch_on_edit
+          "--watch"
         })
       end)
       return true

@@ -3,6 +3,9 @@ luac.out
 
 .DS_Store
 
+# Test assets
+.nvim/
+
 # luarocks build files
 *.src.rock
 *.zip
