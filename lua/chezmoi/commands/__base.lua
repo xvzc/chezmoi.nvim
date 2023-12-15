@@ -1,19 +1,8 @@
 local notify = require("chezmoi.notify")
+local util = require("chezmoi.util")
 local Job = require("plenary.job")
-local List = require("plenary.collections.py_list")
 
 local base_cmd = {}
-
----@param cmd string
----@param pos_args string[]
----@param args string[]
-local function __combine_parameters(cmd, pos_args, args)
-  return List.concat(
-    List.new({ cmd }),
-    List.new(pos_args),
-    List.new(args)
-  )
-end
 
 ---@alias CMD string
 ---@alias POS string[]
@@ -39,7 +28,7 @@ function base_cmd.execute(opts)
 
   local job = Job:new({
     command = "chezmoi",
-    args = __combine_parameters(opts.cmd, opts.pos_args, opts.args),
+    args = util.__flatten(opts.cmd, opts.pos_args, opts.args),
     on_stderr = opts.on_stderr,
     on_exit = opts.on_exit
   })
