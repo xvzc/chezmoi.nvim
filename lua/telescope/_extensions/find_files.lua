@@ -1,5 +1,5 @@
 local chezmoi_commands = require("chezmoi.commands")
-local chezmoi_config = require("chezmoi.config").values
+local chezmoi_config = require("chezmoi").config
 local Job = require("plenary.job")
 local notify = require("chezmoi.notify")
 
@@ -30,31 +30,25 @@ function find.__make_entry_list(target_path, list)
   local results = {}
   for _, v in ipairs(list) do
     local abs_path = Path.joinpath(target_path, Path.new(v))
-    if abs_path:is_dir() then
-      goto SKIP
-    end
     table.insert(results, { v, tostring(abs_path) })
-    ::SKIP::
   end
 
   return results
 end
 
 function find.execute(opts)
-  local target_path = chezmoi_commands.target_path({}, opts)
-  if not target_path then
-    return
-  end
+  local target_path_res = chezmoi_commands.target_path({}, opts)
 
   local list = chezmoi_commands.list({
     "--path-style",
-    "relative"
+    "relative",
+    "--ignore-dirs",
   })
 
   pickers.new(opts, {
     prompt_title = "Chezmoi files",
     finder = finders.new_table {
-      results = find.__make_entry_list(target_path[1], list),
+      results = find.__make_entry_list(target_path_res[1], list),
       entry_maker = function(entry)
         return {
           -- entry[1]: relative_path, entry[2]: absolute_path
@@ -68,9 +62,12 @@ function find.execute(opts)
       actions.select_default:replace(function()
         actions.close(prompt_bufnr)
         local selection = action_state.get_selected_entry()
-        chezmoi_commands.edit(selection.value, {
-          "--watch"
-        })
+        local args = {}
+        if chezmoi_config.watch_on_edit then
+          table.insert(args, "--watch")
+        end
+
+        chezmoi_commands.edit(selection.value, args)
       end)
       return true
     end,

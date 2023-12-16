@@ -1,7 +1,5 @@
 local notify = require("chezmoi.notify")
-local Job = require("plenary.job")
 local base = require("chezmoi.commands.__base")
-local config = require("chezmoi.config").values
 local util = require('chezmoi.util')
 
 local apply_cmd = {}

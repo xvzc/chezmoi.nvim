@@ -3,13 +3,7 @@ local util = require("chezmoi.util")
 
 local commands = {}
 
-function commands.list(args)
-  return base.execute({
-    cmd = "list",
-    args = args,
-  })
-end
-
+---@return string[]
 ---@param targets string|string[]
 ---@param args string[]
 function commands.target_path(targets, args)
@@ -30,7 +24,17 @@ function commands.source_path(targets, args)
   })
 end
 
+---@param targets string|string[]
+---@param args string[]
+function commands.apply(targets, args)
+  return base.execute({
+    cmd = "apply",
+    pos_args = util.__resolve_pos_args(targets),
+    args = args,
+  })
+end
+
 commands.edit = require("chezmoi.commands.__edit").execute
-commands.apply = require("chezmoi.commands.__apply").execute
+commands.list = require("chezmoi.commands.__list").execute
 
 return commands

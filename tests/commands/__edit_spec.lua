@@ -1,6 +1,6 @@
-local edit = require("chezmoi.commands.__edit")
+local edit_cmd = require("chezmoi.commands.__edit")
 
-describe("Test __edit.__resolve_args", function()
+describe("Test __edit.__classify_custom_opts", function()
   local test_results = {}
 
   it("Should return 'watch=true' when --watch given", function()
@@ -9,7 +9,7 @@ describe("Test __edit.__resolve_args", function()
       watch = true
     }
 
-    local actual = edit.__resolve_args(input)
+    local actual = edit_cmd.__classify_custom_opts(input)
     table.insert(test_results, { expected, actual })
   end)
 
@@ -19,7 +19,15 @@ describe("Test __edit.__resolve_args", function()
       watch = false
     }
 
-    local actual = edit.__resolve_args(input)
+    local actual = edit_cmd.__classify_custom_opts(input)
+    table.insert(test_results, { expected, actual })
+  end)
+
+  it("Should remove '--watch' flag when given", function()
+    local input = { "--watch" }
+    local expected = 0
+    local _ = edit_cmd.__classify_custom_opts(input)
+    local actual = #input
     table.insert(test_results, { expected, actual })
   end)
 
