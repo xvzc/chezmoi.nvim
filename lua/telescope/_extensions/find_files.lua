@@ -37,12 +37,14 @@ function find.__make_entry_list(target_path, list)
 end
 
 function find.execute(opts)
+  opts = opts or {}
   local target_path_res = chezmoi_commands.target_path({}, opts)
 
   local list = chezmoi_commands.list({
     "--path-style",
     "relative",
-    "--ignore-dirs",
+    "--include",
+    "files"
   })
 
   pickers.new(opts, {

@@ -14,6 +14,7 @@ function commands.target_path(targets, args)
   })
 end
 
+---@return string[]
 ---@param targets string|string[]
 ---@param args string[]
 function commands.source_path(targets, args)
@@ -24,6 +25,7 @@ function commands.source_path(targets, args)
   })
 end
 
+---@return string[]
 ---@param targets string|string[]
 ---@param args string[]
 function commands.apply(targets, args)
@@ -34,7 +36,14 @@ function commands.apply(targets, args)
   })
 end
 
+function commands.list(args)
+  return base.execute({
+    cmd = "list",
+    args = args,
+  })
+end
+
+---@return string[]
 commands.edit = require("chezmoi.commands.__edit").execute
-commands.list = require("chezmoi.commands.__list").execute
 
 return commands

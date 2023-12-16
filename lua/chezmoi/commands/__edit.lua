@@ -24,7 +24,15 @@ end
 local function watch(bufnr, source_path)
   -- Use autocmd to make it work as if 'watch' option is given
   local augroup = vim.api.nvim_create_augroup("chezmoi", { clear = false })
-  vim.api.nvim_create_autocmd({ 'BufWritePost' }, {
+  local event = { "BufWritePost" }
+
+  vim.api.nvim_clear_autocmds({
+    event = event,
+    group = augroup,
+    buffer = bufnr,
+  })
+
+  vim.api.nvim_create_autocmd(event, {
     group = augroup,
     buffer = bufnr,
     callback = function()
@@ -35,7 +43,7 @@ local function watch(bufnr, source_path)
           source_path,
         },
         on_exit = function(_, _)
-          if config.notification.on_save then
+          if config.notification.on_apply then
             notify.info("Successfully applied")
           end
         end
@@ -56,16 +64,6 @@ function edit_cmd.execute(pos_args, __custom_opts)
   end
 
   local path = Path:new(resolved_pos_args[1])
-
-  if not path:exists() then
-    local message = "The file " .. tostring(path) .. "does not exists.\n"
-    message = message .. "Check the values of the list below\n"
-    message = message .. " - 'config.chezmoi.destination_path'\n"
-    message = message .. " - 'config.chezmoi.source_path'"
-    notify.panic(message)
-    return
-  end
-
   local source_path_res = base.execute({
     cmd = "source-path",
     pos_args = { tostring(path) },

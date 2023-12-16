@@ -6,7 +6,7 @@ local default_config = {
   watch_on_edit = false,
   notification = {
     on_open = true,
-    on_save = true,
+    on_apply = true,
   },
 }
 
@@ -18,9 +18,9 @@ local function load_config(opts, default)
     opts.notification.on_open,
     default.notification.on_open
   )
-  opts.notification.on_save = util.__get_or_default(
-    opts.notification.on_save,
-    default.notification.on_save
+  opts.notification.on_apply = util.__get_or_default(
+    opts.notification.on_apply,
+    default.notification.on_apply
   )
 
   chezmoi.config = opts
