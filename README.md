@@ -8,7 +8,7 @@
 </div>
 
 ## What Is chezmoi.nvim?
-`chezmoi.nvim` is a plugin that can help you with editing or applying chezmoi-managed files on neovim.
+`chezmoi.nvim` is a plugin designed to assist in editing and applying chezmoi-managed files within `neovim`. A notable distinction from the command line tool `chezmoi` is that `chezmoi.nvim` utilizes built-in neovim functions for file editing, allowing us to edit and watch multiple files simultaneously.
 
 ## Getting Started
 ### Requirements
@@ -55,23 +55,15 @@ telescope.load_extension('chezmoi')
 vim.keymap.set('n', '<leader>cz', telescope.extensions.chezmoi.find_files, {})
 ```
 
-## User Commands
-```vim
-" chezmoi list
-" chezmoi.nvim can have additional argument '--ignore-dirs' to remove folders from the result.
-:Chezmoi list <any_chezmoi_args>
-" Usage
-:Chezmoi list --ignore-dirs --path-style=source-absolute
+## API
+### List
+```lua
+local results = require("chezmoi.commands").list()
+print(vim.inspect(managed_files))
+```
 
-" chezmoi edit
-:Chezmoi edit |<tab> " This will suggest the results of `chezmoi list`
-:Chezmoi edit .zshrc
-" Setting options
-:Telescope find_files prompt_prefix=🔍
-
-" If the option accepts a Lua table as its value, you can use, to connect each
-" command string, e.g.: find_command, vimgrep_arguments are both options that
-" accept a Lua table as a value. So, you can configure them on the command line
-"like so:
-:Telescope find_files find_command=rg,--ignore,--hidden,--files prompt_prefix=🔍
+### Edit
+```lua
+-- Note: chezmoi.nvim utilizes builtin neovim functions for file editing instead of `chzmoi edit`
+require("chezmoi.commands").edit("~/.zshrc", { "--watch" })
 ```
