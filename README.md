@@ -34,11 +34,25 @@
 ```lua
 -- default values
 {
-  watch_on_edit = false,
+  watch_on_edit = false, -- automatically run chezmoi apply on save.
   notification = {
-    on_open = true,
-    on_save = true
+    on_open = true, -- run vim.notify() when opening a chezmoi-managed file.
+    on_apply = true -- run vim.notify() when running 'chezmoi apply' automatically
   },
 }
-
 ```
+
+### Telescope integration
+Add the line below to telescope config
+```lua
+-- telscope-config.lua
+local telescope = require("telescope")
+
+telescope.setup {
+  -- ... your telescope config
+}
+
+telescope.load_extension('chezmoi')
+```
+
+
