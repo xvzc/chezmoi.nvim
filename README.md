@@ -42,8 +42,7 @@
 }
 ```
 
-### Telescope integration
-Add the line below to telescope config
+### Telescope Integration
 ```lua
 -- telscope-config.lua
 local telescope = require("telescope")
@@ -56,4 +55,23 @@ telescope.load_extension('chezmoi')
 vim.keymap.set('n', '<leader>cz', telescope.extensions.chezmoi.find_files, {})
 ```
 
+## User Commands
+```vim
+" chezmoi list
+" chezmoi.nvim can have additional argument '--ignore-dirs' to remove folders from the result.
+:Chezmoi list <any_chezmoi_args>
+" Usage
+:Chezmoi list --ignore-dirs --path-style=source-absolute
 
+" chezmoi edit
+:Chezmoi edit |<tab> " This will suggest the results of `chezmoi list`
+:Chezmoi edit .zshrc
+" Setting options
+:Telescope find_files prompt_prefix=🔍
+
+" If the option accepts a Lua table as its value, you can use, to connect each
+" command string, e.g.: find_command, vimgrep_arguments are both options that
+" accept a Lua table as a value. So, you can configure them on the command line
+"like so:
+:Telescope find_files find_command=rg,--ignore,--hidden,--files prompt_prefix=🔍
+```
