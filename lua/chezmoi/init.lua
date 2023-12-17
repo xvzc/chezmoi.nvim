@@ -28,6 +28,11 @@ end
 
 function chezmoi.setup(opts)
   load_config(opts, default_config)
+  vim.g.chezmoi_setup = 1
+end
+
+if vim.g.chezmoi_setup ~= 1 then
+  load_config({}, default_config)
 end
 
 return chezmoi
