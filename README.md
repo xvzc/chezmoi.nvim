@@ -58,7 +58,7 @@ vim.keymap.set('n', '<leader>cz', telescope.extensions.chezmoi.find_files, {})
 ## API
 ### List
 ```lua
-local results = require("chezmoi.commands").list()
+local managed_files = require("chezmoi.commands").list()
 print(vim.inspect(managed_files))
 ```
 
