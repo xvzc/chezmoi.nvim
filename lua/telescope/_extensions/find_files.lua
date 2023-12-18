@@ -65,9 +65,6 @@ function find.execute(opts)
         actions.close(prompt_bufnr)
         local selection = action_state.get_selected_entry()
         local args = {}
-        if chezmoi_config.watch_on_edit then
-          table.insert(args, "--watch")
-        end
 
         chezmoi_commands.edit(selection.value, args)
       end)

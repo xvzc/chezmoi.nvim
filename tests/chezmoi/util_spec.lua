@@ -63,26 +63,6 @@ describe("Test util.__flatten_args", function()
   end)
 end)
 
-describe("Test util.__get_or_default", function()
-  it("Should return default when value is nil", function()
-    local value = nil
-    local default = 1
-    local expected = default
-    local actual = util.__get_or_default(value, default)
-
-    assert(expected, actual)
-  end)
-
-  it("Should return value when value is not nil", function()
-    local value = 3
-    local default = 4
-    local expected = value
-    local actual = util.__get_or_default(value, default)
-
-    assert(expected, actual)
-  end)
-end)
-
 describe("Test util.__normalize_args", function()
   it("Should return the same tbl when not contains --options=value", function()
     local args = { "--path-style", "relative", "--hello", "world" }

@@ -9,19 +9,27 @@ local edit_cmd = {}
 ---@return table { watch: boolean }
 ---@param args string[]
 function edit_cmd.__classify_custom_opts(args)
-  local ret = { watch = false }
+  local ret = {
+    watch = config.edit.watch,
+    force = config.edit.force,
+  }
 
-  for i, v in ipairs(args) do
-    if v == "--watch" then
-      ret.watch = true
-      table.remove(args, i)
-    end
+  local pos = util.__arr_find_first_one_of(args, { "--watch" })
+  if pos ~= nil then
+    ret.watch = true
+    table.remove(args, pos)
+  end
+
+  pos = util.__arr_find_first_one_of(args, { "--force" })
+  if pos ~= nil then
+    ret.force = true
+    table.remove(args, pos)
   end
 
   return ret
 end
 
-local function watch(bufnr, source_path)
+local function watch(bufnr, source_path, opts)
   -- Use autocmd to make it work as if 'watch' option is given
   local augroup = vim.api.nvim_create_augroup("chezmoi", { clear = false })
   local event = { "BufWritePost" }
@@ -36,15 +44,25 @@ local function watch(bufnr, source_path)
     group = augroup,
     buffer = bufnr,
     callback = function()
+      local args = {
+        "--source-path",
+        source_path,
+      }
+
+      if opts.force then
+        table.insert(args, "--force")
+      end
+
       base.execute({
         cmd = "apply",
-        args = {
-          "--source-path",
-          source_path,
-        },
-        on_exit = function(_, _)
+        args = args,
+        on_exit = function(_, code)
           if config.notification.on_apply then
-            notify.info("Successfully applied")
+            if code == 0 then
+              notify.info("Successfully applied")
+            else
+              notify.error("Failed to apply")
+            end
           end
         end
       })
@@ -53,13 +71,13 @@ local function watch(bufnr, source_path)
 end
 
 ---@ param pos_args string|string[]
----@ param __custom_opts string[]
-function edit_cmd.execute(pos_args, __custom_opts)
-  __custom_opts = edit_cmd.__classify_custom_opts(__custom_opts or {})
+---@ param args string[]
+function edit_cmd.execute(pos_args, args)
+  local opts = edit_cmd.__classify_custom_opts(args or {})
 
   local resolved_pos_args = util.__resolve_pos_args(pos_args)
   if not resolved_pos_args or #resolved_pos_args ~= 1 then
-    notify.panic("Failed to resolve positional arguments")
+    notify.panic("Failed to resolve positional arguments. Please specify a target file.")
     return
   end
 
@@ -85,9 +103,9 @@ function edit_cmd.execute(pos_args, __custom_opts)
     return
   end
 
-  if __custom_opts.watch or config.watch_on_edit then
+  if opts.watch then
     local bufnr = vim.api.nvim_get_current_buf()
-    watch(bufnr, source_path)
+    watch(bufnr, source_path, opts)
   end
 end
 

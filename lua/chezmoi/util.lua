@@ -45,14 +45,6 @@ function util.__arr_contains_one_of(tbl, values)
   return false
 end
 
-function util.__get_or_default(value, default)
-  if value == nil then
-    return default
-  else
-    return value
-  end
-end
-
 -- this will resolve positional arguments
 -- which should be an array of strings
 ---@param pos_args string|string[]|any

@@ -36,10 +36,13 @@
 ```lua
 -- default values
 {
-  watch_on_edit = false, -- automatically run chezmoi apply on save.
+  edit = {
+    watch = false, -- Set true to automatically apply on save.
+    force = false, -- Set true to force apply. Works only when watch = true.
+  },
   notification = {
-    on_open = true, -- run vim.notify() when opening a chezmoi-managed file.
-    on_apply = true -- run vim.notify() when running 'chezmoi apply' automatically
+    on_open = true, -- vim.notify when start editing chezmoi-managed file.
+    on_apply = true, -- vim.notify on apply.
   },
 }
 ```
@@ -57,7 +60,22 @@ telescope.load_extension('chezmoi')
 vim.keymap.set('n', '<leader>cz', telescope.extensions.chezmoi.find_files, {})
 ```
 
+## User Command
+```vim
+:ChezmoiEdit <target> <args>
+" This will open '~/.local/chezmoi/dot_zshrc' and apply the changes on save
+" :ChezmoiEdit ~/.zshrc --watch
+" Arguments
+" --watch Automatically apply changes on save
+" --force force apply.
+
+:ChezmoiList <args>
+" :ChezmoiList --include=files
+" You can put any of command line arguments of 'chezmoi' here
+```
+
 ## API
+See [Commands](https://github.com/xvzc/chezmoi.nvim/blob/main/lua/chezmoi/commands/init.lua) for more information
 ### List
 ```lua
 local managed_files = require("chezmoi.commands").list()
