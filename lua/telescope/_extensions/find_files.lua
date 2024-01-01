@@ -1,14 +1,15 @@
-local chezmoi_commands = require("chezmoi.commands")
+local chezmoi_commands = require "chezmoi.commands"
 local chezmoi_config = require("chezmoi").config
-local Job = require("plenary.job")
-local notify = require("chezmoi.notify")
+local Job = require "plenary.job"
+local notify = require "chezmoi.notify"
 
+local make_entry = require "telescope.make_entry"
 local telescope_config = require("telescope.config").values
-local action_state = require("telescope.actions.state")
-local actions = require("telescope.actions")
-local pickers = require("telescope.pickers")
-local finders = require("telescope.finders")
-local Path = require("plenary.path")
+local action_state = require "telescope.actions.state"
+local actions = require "telescope.actions"
+local pickers = require "telescope.pickers"
+local finders = require "telescope.finders"
+local Path = require "plenary.path"
 
 local find = {}
 
@@ -38,41 +39,33 @@ end
 
 function find.execute(opts)
   opts = opts or {}
-  local target_path_res = chezmoi_commands.target_path({}, opts)
 
-  local list = chezmoi_commands.list({
+  local list = chezmoi_commands.list {
     "--path-style",
-    "relative",
+    "absolute",
     "--include",
-    "files"
-  })
+    "files",
+  }
 
-  pickers.new(opts, {
-    prompt_title = "Chezmoi files",
-    finder = finders.new_table {
-      results = find.__make_entry_list(target_path_res[1], list),
-      entry_maker = function(entry)
-        return {
-          -- entry[1]: relative_path, entry[2]: absolute_path
-          ordinal = entry[1],
-          display = entry[1],
-          value = entry[2],
-        }
-      end
-    },
-    attach_mappings = function(prompt_bufnr, _)
-      actions.select_default:replace(function()
-        actions.close(prompt_bufnr)
-        local selection = action_state.get_selected_entry()
-        local args = {}
-
-        chezmoi_commands.edit(selection.value, args)
-      end)
-      return true
-    end,
-    previewer = telescope_config.file_previewer(opts),
-    sorter = telescope_config.generic_sorter(opts),
-  }):find()
+  pickers
+    .new(opts, {
+      prompt_title = "Chezmoi files",
+      finder = finders.new_table {
+        results = list,
+        entry_maker = make_entry.gen_from_file(opts),
+      },
+      attach_mappings = function(prompt_bufnr, _)
+        actions.select_default:replace(function()
+          actions.close(prompt_bufnr)
+          local selection = action_state.get_selected_entry()
+          chezmoi_commands.edit(selection.value, {})
+        end)
+        return true
+      end,
+      previewer = telescope_config.file_previewer(opts),
+      sorter = telescope_config.generic_sorter(opts),
+    })
+    :find()
 end
 
 return find
