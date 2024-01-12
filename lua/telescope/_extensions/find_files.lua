@@ -41,10 +41,12 @@ function find.execute(opts)
   opts = opts or {}
 
   local list = chezmoi_commands.list {
-    "--path-style",
-    "absolute",
-    "--include",
-    "files",
+    args = {
+      "--path-style",
+      "absolute",
+      "--include",
+      "files",
+    },
   }
 
   pickers
@@ -58,7 +60,9 @@ function find.execute(opts)
         actions.select_default:replace(function()
           actions.close(prompt_bufnr)
           local selection = action_state.get_selected_entry()
-          chezmoi_commands.edit(selection.value, {})
+          chezmoi_commands.edit {
+            targets = selection.value,
+          }
         end)
         return true
       end,

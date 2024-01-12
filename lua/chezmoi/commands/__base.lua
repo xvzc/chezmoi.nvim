@@ -1,23 +1,32 @@
-local notify = require("chezmoi.notify")
-local util = require("chezmoi.util")
-local Job = require("plenary.job")
+local notify = require "chezmoi.notify"
+local util = require "chezmoi.util"
+local Path = require "plenary.path"
+local Job = require "plenary.job"
 
-local base_cmd = {}
+local M = {}
 
----@alias CMD string
----@alias POS string[]
----@alias ARGS string[]
----@alias ON_STDERR fun(error: string, data: string): boolean
----@alias ON_EXIT fun(code: number, signal: number)
----@return string[]
----@param opts { cmd: CMD, pos_args?: POS, args?: ARGS, on_stderr?: ON_STDERR, on_exit?: ON_EXIT }
-function base_cmd.execute(opts)
+---@class Options
+---@field cmd? string
+---@field targets? any
+---@field args? string[]
+---@field on_exit? fun(code: number, signal: number)
+---@field on_stderr? fun(error: string, data: string): boolean
+
+---@param opts Options
+function M.execute(opts)
   opts = opts or {}
-  opts.pos_args = opts.pos_args or {}
+  opts.targets = opts.targets or {}
   opts.args = opts.args or {}
 
+  for i, v in ipairs(opts.targets) do
+    local path = Path:new(v)
+    opts.targets[i] = path:expand()
+  end
+
+  opts.args = util.__normalize_args(opts.args)
+
   if not opts.cmd then
-    notify.panic("command not provided")
+    notify.panic "command not provided"
     return {}
   end
 
@@ -28,16 +37,16 @@ function base_cmd.execute(opts)
 
   opts.on_stderr = opts.on_stderr or on_stderr_default
 
-  local job = Job:new({
+  local job = Job:new {
     command = "chezmoi",
-    args = util.__flatten_args(opts.cmd, opts.pos_args, opts.args),
+    args = vim.tbl_flatten { opts.cmd, opts.targets, opts.args },
     on_stderr = opts.on_stderr,
-    on_exit = opts.on_exit
-  })
+    on_exit = opts.on_exit,
+  }
 
   job:sync()
 
   return job:result()
 end
 
-return base_cmd
+return M

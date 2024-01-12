@@ -1,4 +1,3 @@
-local notify = require "chezmoi.notify"
 local base = require "chezmoi.commands.__base"
 local util = require "chezmoi.util"
 
@@ -11,7 +10,7 @@ function M.execute(opts)
   opts.args = util.__normalize_args(opts.args)
   opts.cmd = nil
 
-  return base.execute(vim.tbl_deep_extend("force", { cmd = "apply" }, opts))
+  return base.execute(vim.tbl_deep_extend("force", { cmd = "source-path" }, opts))
 end
 
 return M
