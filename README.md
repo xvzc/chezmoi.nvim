@@ -43,8 +43,21 @@
   notification = {
     on_open = true, -- vim.notify when start editing chezmoi-managed file.
     on_apply = true, -- vim.notify on apply.
+    on_watch = false,
   },
 }
+```
+
+### Treat all files in chezmoi source directory as chezmoi files
+The below configuration wll allow you to automatically apply changes on files under chezmoi source path.
+```lua
+--  e.g. ~/.local/share/chezmoi/*
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+	pattern = { os.getenv("HOME") .. "/.local/share/chezmoi/*" },
+	callback = function()
+    vim.schedule(require("chezmoi.commands.__edit").watch)
+	end,
+})
 ```
 
 ### Telescope Integration
@@ -84,6 +97,9 @@ print(vim.inspect(managed_files))
 
 ### Edit
 ```lua
--- Note: chezmoi.nvim utilizes builtin neovim functions for file editing instead of `chzmoi edit`
-require("chezmoi.commands").edit("~/.zshrc", { "--watch" })
+-- NOTE: chezmoi.nvim utilizes builtin neovim functions for file editing instead of `chzmoi edit`
+require("chezmoi.commands").edit({
+    targets = { "~/.zshrc" },
+    args = { "--watch" }
+})
 ```
