@@ -10,7 +10,7 @@ local M = {}
 ---@field targets? any
 ---@field args? string[]
 ---@field on_exit? fun(code: number, signal: number)
----@field on_stderr? fun(error: string, data: string): boolean
+---@field on_stderr? fun(error: string, data: string)
 
 ---@param opts Options
 function M.execute(opts)
@@ -32,15 +32,12 @@ function M.execute(opts)
 
   local on_stderr_default = function(_, data)
     error("'chezmoi " .. opts.cmd .. "'" .. "command returned non 0 exit code:\n" .. data)
-    return nil
   end
-
-  opts.on_stderr = opts.on_stderr or on_stderr_default
 
   local job = Job:new {
     command = "chezmoi",
     args = vim.tbl_flatten { opts.cmd, opts.targets, opts.args },
-    on_stderr = opts.on_stderr,
+    on_stderr = opts.on_stderr or on_stderr_default,
     on_exit = opts.on_exit,
   }
 

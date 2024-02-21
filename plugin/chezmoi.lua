@@ -21,14 +21,17 @@ local command_entry = {
   end,
   list = function(args_all)
     local targets, args = parse_args(args_all)
+    local managed_files = commands.list({
+      targets = targets,
+      args = args
+    })
 
-    local list_res = commands.list(targets, args)
-    local view = ""
-    for _, v in ipairs(list_res) do
-      view = view .. v .. "\n"
+    local out = ""
+    for _, v in ipairs(managed_files) do
+      out = out .. v .. "\n"
     end
 
-    print(view)
+    print(out)
   end,
 }
 

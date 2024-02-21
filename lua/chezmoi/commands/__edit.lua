@@ -5,6 +5,7 @@ local util = require "chezmoi.util"
 local apply = require "chezmoi.commands.__apply"
 local status = require "chezmoi.commands.__status"
 local base = require "chezmoi.commands.__base"
+local log = require "chezmoi.log"
 
 local M = {}
 
@@ -37,8 +38,8 @@ function M.watch(bufnr, force)
   -- Use autocmd to make it work as if 'watch' option is given
   bufnr = bufnr or vim.api.nvim_get_current_buf()
   force = force or config.edit.force
+
   local source_path = vim.api.nvim_buf_get_name(bufnr)
-  local augroup = vim.api.nvim_create_augroup("chezmoi", { clear = false })
   local event = { "BufWritePost" }
 
   local status_err = nil
@@ -53,10 +54,11 @@ function M.watch(bufnr, force)
   }
 
   if status_err then
-    notify.warn(status_err)
+    log.warn(status_err)
     return
   end
 
+  local augroup = vim.api.nvim_create_augroup("chezmoi", { clear = false })
   local autocmds = vim.api.nvim_get_autocmds {
     event = event,
     group = augroup,
@@ -64,7 +66,7 @@ function M.watch(bufnr, force)
   }
 
   if #autocmds == 0 and config.notification.on_watch then
-    notify.info("Edit: '" .. tostring(source_path) .. "'" .. " will be automatically applied")
+    notify.info "Edit: This file will be automatically applied"
   end
 
   vim.api.nvim_clear_autocmds {
@@ -97,7 +99,7 @@ function M.watch(bufnr, force)
               return
             end
 
-            notify.info "Successfully applied"
+            notify.info "Edit: Successfully applied"
           end
         end,
       }

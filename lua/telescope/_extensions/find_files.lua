@@ -1,7 +1,4 @@
 local chezmoi_commands = require "chezmoi.commands"
-local chezmoi_config = require("chezmoi").config
-local Job = require "plenary.job"
-local notify = require "chezmoi.notify"
 
 local make_entry = require "telescope.make_entry"
 local telescope_config = require("telescope.config").values
@@ -56,14 +53,19 @@ function find.execute(opts)
         results = list,
         entry_maker = make_entry.gen_from_file(opts),
       },
-      attach_mappings = function(prompt_bufnr, _)
-        actions.select_default:replace(function()
+      attach_mappings = function(prompt_bufnr, map)
+        local edit_action = function()
           actions.close(prompt_bufnr)
           local selection = action_state.get_selected_entry()
           chezmoi_commands.edit {
             targets = selection.value,
           }
-        end)
+        end
+
+        actions.select_default:replace(edit_action)
+        actions.select_tab:replace(edit_action)
+        actions.select_tab_drop:replace(edit_action)
+        actions.select_drop:replace(edit_action)
         return true
       end,
       previewer = telescope_config.file_previewer(opts),

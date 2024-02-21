@@ -1,4 +1,3 @@
-local notify = require "chezmoi.notify"
 local base = require "chezmoi.commands.__base"
 local util = require "chezmoi.util"
 
@@ -9,9 +8,8 @@ function M.execute(opts)
   opts = opts or {}
   opts.targets = vim.tbl_flatten { opts.targets or {} }
   opts.args = util.__normalize_args(opts.args)
-  opts.cmd = nil
 
-  return base.execute(vim.tbl_deep_extend("force", { cmd = "apply" }, opts))
+  return base.execute(vim.tbl_deep_extend("keep", { cmd = "apply" }, opts))
 end
 
 return M

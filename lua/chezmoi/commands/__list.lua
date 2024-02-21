@@ -8,9 +8,8 @@ function M.execute(opts)
   opts = opts or {}
   opts.targets = vim.tbl_flatten { opts.targets or {} }
   opts.args = util.__normalize_args(opts.args)
-  opts.cmd = nil
 
-  return base.execute(vim.tbl_deep_extend("force", { cmd = "list" }, opts))
+  return base.execute(vim.tbl_deep_extend("keep", { cmd = "list" }, opts))
 end
 
 return M
