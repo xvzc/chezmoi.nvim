@@ -37,13 +37,16 @@
 -- default values
 {
   edit = {
-    watch = false, -- Set true to automatically apply on save.
-    force = false, -- Set true to force apply. Works only when watch = true.
+    watch = false,
+    force = false,
   },
   notification = {
-    on_open = true, -- vim.notify when start editing chezmoi-managed file.
-    on_apply = true, -- vim.notify on apply.
+    on_open = true,
+    on_apply = true,
     on_watch = false,
+  },
+  telescope = {
+    select = { "<CR>" },
   },
 }
 ```
