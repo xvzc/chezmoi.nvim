@@ -1,4 +1,5 @@
 local chezmoi_commands = require "chezmoi.commands"
+local config = require("chezmoi").config
 
 local make_entry = require "telescope.make_entry"
 local telescope_config = require("telescope.config").values
@@ -62,10 +63,11 @@ function find.execute(opts)
           }
         end
 
+        for _, v in ipairs(config.telescope.select) do
+          map("i", v, "select_default")
+        end
+
         actions.select_default:replace(edit_action)
-        actions.select_tab:replace(edit_action)
-        actions.select_tab_drop:replace(edit_action)
-        actions.select_drop:replace(edit_action)
         return true
       end,
       previewer = telescope_config.file_previewer(opts),

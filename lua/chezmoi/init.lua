@@ -10,6 +10,9 @@ local default_config = {
     on_apply = true,
     on_watch = false,
   },
+  telescope = {
+    select = { "<CR>" },
+  },
 }
 
 function chezmoi.setup(opts)
