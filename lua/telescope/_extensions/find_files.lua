@@ -49,7 +49,7 @@ function find.execute(opts)
 
   pickers
     .new(opts, {
-      prompt_title = "Chezmoi files",
+      prompt_title = "Chezmoi Files",
       finder = finders.new_table {
         results = list,
         entry_maker = make_entry.gen_from_file(opts),
