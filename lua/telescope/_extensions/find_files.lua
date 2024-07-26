@@ -19,6 +19,8 @@ function find.execute(opts)
       "absolute",
       "--include",
       "files",
+      "--exclude",
+      "externals",
     },
   }
 
