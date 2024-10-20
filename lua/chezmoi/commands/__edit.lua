@@ -39,7 +39,7 @@ function M.watch(bufnr, force)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
   force = force or config.edit.force
 
-  local source_path = vim.api.nvim_buf_get_name(bufnr)
+  local source_path = vim.fn.bufname(bufnr)
   local event = { "BufWritePost" }
 
   local status_err = nil
