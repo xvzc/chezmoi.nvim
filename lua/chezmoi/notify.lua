@@ -3,6 +3,10 @@ local notify = {}
 local plugin = "chezmoi.nvim"
 
 local function plain(text, level, opts)
+  if text == nil then
+    return
+  end
+
   opts = opts or {}
   opts.title = plugin
 
