@@ -14,6 +14,7 @@ function find.execute(opts)
   opts = opts or {}
 
   local list = chezmoi_commands.list {
+    targets = opts.targets,
     args = {
       "--path-style",
       "absolute",
