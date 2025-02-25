@@ -35,7 +35,7 @@ function M.__classify_args(tbl)
 
   local args_start_idx = nil
   for i, v in ipairs(tbl) do
-    if v ~= "" and v[1] == '-' then
+    if v ~= "" and string.sub(v, 1, 1) == '-' then
       args_start_idx = i
       break
     end
