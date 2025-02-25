@@ -12,17 +12,19 @@ local find = {}
 
 function find.execute(opts)
   opts = opts or {}
+  local default_args = {
+    "--path-style",
+    "absolute",
+    "--include",
+    "files",
+    "--exclude",
+    "externals",
+  }
+  local args = opts.args or default_args
 
   local list = chezmoi_commands.list {
     targets = opts.targets,
-    args = {
-      "--path-style",
-      "absolute",
-      "--include",
-      "files",
-      "--exclude",
-      "externals",
-    },
+    args = args,
   }
 
   opts.cwd = os.getenv("HOME")
