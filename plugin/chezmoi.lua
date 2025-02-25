@@ -16,14 +16,14 @@ local command_entry = {
     local targets, args = parse_args(args_all)
     commands.edit({
       targets = targets,
-      args = args
+      args = args,
     })
   end,
   list = function(args_all)
     local targets, args = parse_args(args_all)
     local managed_files = commands.list({
       targets = targets,
-      args = args
+      args = args,
     })
 
     local out = ""
@@ -40,10 +40,26 @@ local function load_command(cmd, ...)
   command_entry[cmd](args)
 end
 
+local function edit_complete(arg_lead, cmd_line, cursor_pos)
+  -- This automatically filters arguments
+  local completions = vim.fn.getcompletion(arg_lead, "file")
+
+  -- customlist behaviour does not filter args, so we do it here
+  local accepted_args = { "--watch", "--force" }
+  for _, arg in ipairs(accepted_args) do
+    if arg:find(arg_lead, 1, true) then
+      table.insert(completions, arg)
+    end
+  end
+
+  return completions
+end
+
 vim.api.nvim_create_user_command("ChezmoiEdit", function(opts)
   load_command("edit", unpack(opts.fargs))
 end, {
   nargs = "*",
+  complete = edit_complete, -- lua function equivalent to customlist
 })
 
 vim.api.nvim_create_user_command("ChezmoiList", function(opts)
