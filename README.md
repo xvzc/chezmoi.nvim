@@ -78,6 +78,10 @@ telescope.setup {
 
 telescope.load_extension('chezmoi')
 vim.keymap.set('n', '<leader>cz', telescope.extensions.chezmoi.find_files, {})
+-- You can also search a specific directory, for example
+vim.keymap.set('n', '<leader>fc', function()
+  extensions.chezmoi.find_files({targets = vim.fn.stdpath("config")})
+end, {})
 ```
 
 ### fzf-lua Integration
