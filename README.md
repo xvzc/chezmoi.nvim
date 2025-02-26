@@ -81,7 +81,7 @@ vim.keymap.set('n', '<leader>cz', telescope.extensions.chezmoi.find_files, {})
 -- You can also search a specific target directory and override arguments
 -- Here is an example with the default args
 vim.keymap.set('n', '<leader>fc', function()
-  extensions.chezmoi.find_files({
+  telescope.extensions.chezmoi.find_files({
     targets = vim.fn.stdpath("config"),
     args = {
       "--path-style",
