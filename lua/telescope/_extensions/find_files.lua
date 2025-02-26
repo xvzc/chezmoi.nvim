@@ -10,7 +10,7 @@ local finders = require "telescope.finders"
 
 local find = {}
 
-function find.execute(opts, dirs, args)
+function find.execute(opts)
   opts = opts or {}
   local default_args = {
     "--path-style",
@@ -20,10 +20,11 @@ function find.execute(opts, dirs, args)
     "--exclude",
     "externals",
   }
+  local args = opts.args or default_args
 
   local list = chezmoi_commands.list {
-    targets = dirs,
-    args = args or default_args,
+    targets = opts.targets,
+    args = args,
   }
 
   opts.cwd = os.getenv("HOME")
