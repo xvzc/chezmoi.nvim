@@ -36,7 +36,7 @@ function M.execute(opts)
 
   local job = Job:new {
     command = "chezmoi",
-    args = vim.tbl_flatten { opts.cmd, opts.targets, opts.args },
+    args = vim.iter({ opts.cmd, opts.targets, opts.args }):flatten():totable(),
     on_stderr = opts.on_stderr or on_stderr_default,
     on_exit = opts.on_exit,
   }
