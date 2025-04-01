@@ -110,7 +110,7 @@ end
 ---@param opts { targets?: any, args: string[]? }
 function M.execute(opts)
   opts = opts or {}
-  opts.targets = vim.tbl_flatten { opts.targets or {} }
+  opts.targets = vim.iter({ opts.targets or {} }):flatten():totable()
   local custom_opts = M.__parse_custom_opts(opts.args or {})
 
   if vim.tbl_isempty(opts.targets) then
