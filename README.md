@@ -32,18 +32,35 @@
 },
 ```
 
-### Configuration
+### Configuration Options
 ```lua
--- default values
 {
   edit = {
     watch = false,
     force = false,
   },
-  notification = {
-    on_open = true,
-    on_apply = true,
-    on_watch = false,
+  events = {
+    on_open = {
+      notification = {
+        enable = true,
+        msg = "Opened a chezmoi-managed file",
+        opts = {},
+      },
+    },
+    on_watch = {
+      notification = {
+        enable = true,
+        msg = "This file will be automatically applied",
+        opts = {},
+      },
+    },
+    on_apply = {
+      notification = {
+        enable = true,
+        msg = "Successfully applied",
+        opts = {},
+      },
+    },
   },
   telescope = {
     select = { "<CR>" },
@@ -65,6 +82,26 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
         vim.schedule(edit_watch)
     end,
 })
+```
+
+### Overriding callback functions running on events
+```lua
+
+{
+-- ...
+  events = {
+    on_open = {
+      -- NOTE: This will override the default behavior of callback functions,
+      -- including the invocation of notifications. If you want to override
+      -- the default behavior but still show a notification on certain events,
+      -- you should define the notification logic within your override function.
+      override = function(bufnr)
+        vim.notify("Opened a chezmoi-managed file")
+      end,
+    },
+-- ...
+}
+
 ```
 
 ### Telescope Integration
