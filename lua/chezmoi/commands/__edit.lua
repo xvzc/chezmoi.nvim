@@ -40,8 +40,6 @@ function M.watch(bufnr, force)
   force = force or config.edit.force
 
   local source_path = vim.api.nvim_buf_get_name(bufnr)
-  local event = { "BufWritePost" }
-
   local status_err = nil
   status.execute {
     args = {
@@ -58,6 +56,7 @@ function M.watch(bufnr, force)
     return
   end
 
+  local event = { "BufWritePost" }
   local augroup = vim.api.nvim_create_augroup("chezmoi", { clear = false })
   local autocmds = vim.api.nvim_get_autocmds {
     event = event,
@@ -65,8 +64,19 @@ function M.watch(bufnr, force)
     buffer = bufnr,
   }
 
-  if #autocmds == 0 and config.notification.on_watch then
-    notify.info "Edit: This file will be automatically applied"
+  local on_watch_conf = config.events.on_watch
+  local on_watch_func = function(_)
+    if on_watch_conf.notification.enable then
+      notify.info(on_watch_conf.notification.msg, on_watch_conf.notification.opts)
+    end
+  end
+
+  if on_watch_conf.override ~= nil and type(on_watch_conf.override) == "function" then
+    on_watch_func = on_watch_conf.override
+  end
+
+  if #autocmds == 0 then
+    on_watch_func(bufnr)
   end
 
   vim.api.nvim_clear_autocmds {
@@ -94,13 +104,25 @@ function M.watch(bufnr, force)
           notify.warn(data)
         end,
         on_exit = function(_, apply_exit_code)
-          if config.notification.on_apply then
-            if apply_exit_code ~= 0 then
-              return
-            end
-
-            notify.info "Edit: Successfully applied"
+          if apply_exit_code ~= 0 then
+            return
           end
+
+          local on_apply_conf = config.events.on_apply
+          local on_apply_func = function(_)
+            if on_apply_conf.notification.enable then
+              notify.info(on_apply_conf.notification.msg, on_apply_conf.notification.opts)
+            end
+          end
+
+          if
+            on_apply_conf.override ~= nil
+            and type(on_apply_conf.override) == "function"
+          then
+            on_apply_func = on_apply_conf.override
+          end
+
+          on_apply_func(bufnr)
         end,
       }
     end,
@@ -133,11 +155,20 @@ function M.execute(opts)
 
     local source_path = source_path_res[1]
 
+    local on_open_conf = config.events.on_open
+    local on_open_func = function(_)
+      if on_open_conf.notification.enable then
+        notify.info(on_open_conf.notification.msg, on_open_conf.notification.opts)
+      end
+    end
+
+    if on_open_conf.override ~= nil and type(on_open_conf.override) == "function" then
+      on_open_func = on_open_conf.override
+    end
+
     local ok, _ = pcall(vim.cmd.edit, source_path)
     if ok then
-      if config.notification.on_open then
-        notify.info "Edit: Opened a chezmoi-managed file"
-      end
+      on_open_func(bufnr)
     else
       notify.panic("Failed to open file " .. source_path)
       return
