@@ -134,7 +134,7 @@ vim.keymap.set('n', '<leader>fc', function()
 end, {})
 ```
 
-## User Command
+## User Commands
 ```vim
 :ChezmoiEdit <target> <args>
 " This will open '~/.local/chezmoi/dot_zshrc' and apply the changes on save
