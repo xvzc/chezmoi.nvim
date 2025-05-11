@@ -68,7 +68,7 @@
 }
 ```
 
-### Treat all files in chezmoi source directory as chezmoi files
+### Automatically Running `chezmoi apply` In Specific Directories
 The below configuration wll allow you to automatically apply changes on files under chezmoi source path.
 ```lua
 --  e.g. ~/.local/share/chezmoi/*
@@ -84,7 +84,7 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
 })
 ```
 
-### Overriding callback functions running on events
+### Overriding Callback Functions
 ```lua
 
 {
@@ -115,12 +115,14 @@ telescope.setup {
 
 telescope.load_extension('chezmoi')
 vim.keymap.set('n', '<leader>cz', telescope.extensions.chezmoi.find_files, {})
+
 -- You can also search a specific target directory and override arguments
 -- Here is an example with the default args
 vim.keymap.set('n', '<leader>fc', function()
   telescope.extensions.chezmoi.find_files({
     targets = vim.fn.stdpath("config"),
-    args = {
+    -- This overrides the default arguments used with 'chezmoi list'
+    args = { 
       "--path-style",
       "absolute",
       "--include",
@@ -130,24 +132,6 @@ vim.keymap.set('n', '<leader>fc', function()
     }
   })
 end, {})
-```
-
-### fzf-lua Integration
-```lua
-fzf_chezmoi = function()
-  require'fzf-lua'.fzf_exec(require("chezmoi.commands").list(), {
-    actions = {
-      ['default'] = function(selected, opts)
-	require("chezmoi.commands").edit({
-	  targets = {"~/" .. selected[1]},
-	  args = { "--watch" }
-	})
-      end
-    }
-  })
-end
-
-vim.api.nvim_command('command! ChezmoiFzf lua fzf_chezmoi()')
 ```
 
 ## User Command
