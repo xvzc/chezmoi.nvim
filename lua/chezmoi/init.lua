@@ -1,6 +1,7 @@
 local chezmoi = {}
 
 local default_config = {
+  extra_args = {},
   edit = {
     watch = false,
     force = false,

@@ -2,6 +2,7 @@ local notify = require "chezmoi.notify"
 local util = require "chezmoi.util"
 local Path = require "plenary.path"
 local Job = require "plenary.job"
+local config = require("chezmoi").config
 
 local M = {}
 
@@ -17,6 +18,7 @@ function M.execute(opts)
   opts = opts or {}
   opts.targets = opts.targets or {}
   opts.args = opts.args or {}
+  opts.args = vim.tbl_deep_extend("keep", config.extra_args, opts)
 
   for i, v in ipairs(opts.targets) do
     local path = Path:new(v)
@@ -31,7 +33,7 @@ function M.execute(opts)
   end
 
   local on_stderr_default = function(_, data)
-    error("'chezmoi " .. opts.cmd .. "'" .. "command returned non 0 exit code:\n" .. data)
+    error("'chezmoi " .. opts.cmd .. "'" .. "exited with an error:\n" .. data)
   end
 
   local job = Job:new {

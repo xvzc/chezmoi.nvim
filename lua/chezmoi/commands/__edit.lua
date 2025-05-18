@@ -9,8 +9,8 @@ local log = require "chezmoi.log"
 
 local M = {}
 
----@return table { watch: boolean }
 ---@param args string[]
+---@return table { watch: boolean, force: boolean }
 function M.__parse_custom_opts(args)
   local ret = {
     watch = config.edit.watch,
