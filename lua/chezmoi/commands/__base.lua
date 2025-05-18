@@ -18,7 +18,9 @@ function M.execute(opts)
   opts = opts or {}
   opts.targets = opts.targets or {}
   opts.args = opts.args or {}
-  opts.args = vim.tbl_deep_extend("keep", config.extra_args, opts)
+  for _, v in ipairs(config.extra_args) do
+    table.insert(opts.args, v)
+  end
 
   for i, v in ipairs(opts.targets) do
     local path = Path:new(v)
