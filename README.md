@@ -38,6 +38,8 @@
   edit = {
     watch = false,
     force = false,
+    -- Edit Age encrypted files
+    encrypted = false,
   },
   events = {
     on_open = {
@@ -69,7 +71,7 @@
 ```
 
 ### Automatically Running `chezmoi apply` In Specific Directories
-The below configuration wll allow you to automatically apply changes on files under chezmoi source path.
+The below configuration will allow you to automatically apply changes on files under chezmoi source path.
 ```lua
 --  e.g. ~/.local/share/chezmoi/*
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
@@ -158,7 +160,7 @@ print(vim.inspect(managed_files))
 
 ### Edit
 ```lua
--- NOTE: chezmoi.nvim utilizes builtin neovim functions for file editing instead of `chzmoi edit`
+-- NOTE: chezmoi.nvim utilizes builtin neovim functions for file editing instead of `chezmoi edit`
 require("chezmoi.commands").edit({
     targets = { "~/.zshrc" },
     args = { "--watch" }
