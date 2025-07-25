@@ -5,6 +5,7 @@ local default_config = {
   edit = {
     watch = false,
     force = false,
+    encrypted = false,
   },
   events = {
     on_open = {

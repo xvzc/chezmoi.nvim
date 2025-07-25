@@ -136,6 +136,56 @@ function M.watch(bufnr, force)
   })
 end
 
+---@param source_path string
+---@param target_path string
+---@return boolean
+function M.__edit_encrypted(source_path, target_path)
+  local rval = 1
+  local result = base.execute {
+    cmd = "decrypt",
+    args = { "--source-path", source_path },
+    on_exit = function(_, return_val)
+      rval = return_val
+    end,
+  }
+
+  if rval ~= 0 then
+    notify.error "Failed to decrypt, error while invoking 'chezmoi decrypt'"
+    return false
+  end
+
+  local decrypted_bufnr = vim.api.nvim_create_buf(true, false)
+  vim.api.nvim_buf_set_lines(decrypted_bufnr, 0, -1, false, result)
+  vim.api.nvim_set_current_buf(decrypted_bufnr)
+
+  -- File type detection using target filename
+  vim.api.nvim_buf_set_name(decrypted_bufnr, target_path)
+  vim.cmd "filetype detect"
+
+  vim.api.nvim_buf_set_name(decrypted_bufnr, source_path)
+
+  -- Let Chezmoi encrypt and write the file
+  vim.api.nvim_set_option_value("modified", false, { buf = decrypted_bufnr })
+  vim.api.nvim_set_option_value("buftype", "acwrite", { buf = decrypted_bufnr })
+  vim.api.nvim_create_autocmd("BufWriteCmd", {
+    buffer = decrypted_bufnr,
+    callback = function()
+      if vim.api.nvim_get_option_value("modified", { buf = decrypted_bufnr }) ~= true then
+        return
+      end
+      base.execute {
+        cmd = "encrypt",
+        args = { "--output", source_path },
+        writer = vim.api.nvim_buf_get_lines(decrypted_bufnr, 0, -1, false),
+      }
+
+      vim.api.nvim_set_option_value("modified", false, { buf = decrypted_bufnr })
+      vim.api.nvim_exec_autocmds("BufWritePost", { buffer = decrypted_bufnr })
+    end,
+  })
+  return true
+end
+
 ---@param opts { targets?: any, args: string[]? }
 function M.execute(opts)
   opts = opts or {}
@@ -175,66 +225,22 @@ function M.execute(opts)
 
     local file_ext = FileType.detect_from_extension(source_path)
 
-    if file_ext == "age" then
-      local rval = 1
-      local result = base.execute {
-        cmd = "decrypt",
-        args = { "--source-path", source_path },
-        on_exit = function(_, return_val)
-          rval = return_val
-        end,
-      }
-
-      if rval ~= 0 then
-        notify.panic("Failed to decrypt file " .. source_path)
-        return
-      end
-
-      local decrypted_bufnr = vim.api.nvim_create_buf(true, false)
-      vim.api.nvim_buf_set_lines(decrypted_bufnr, 0, -1, false, result)
-      vim.api.nvim_set_current_buf(decrypted_bufnr)
-
-      -- File type detection using target filename
-      vim.api.nvim_buf_set_name(decrypted_bufnr, opts.targets[1])
-      vim.cmd "filetype detect"
-
-      vim.api.nvim_buf_set_name(decrypted_bufnr, source_path)
-
-      -- Let Chezmoi encrypt and write the file
-      vim.api.nvim_set_option_value("modified", false, { buf = decrypted_bufnr })
-      vim.api.nvim_set_option_value("buftype", "acwrite", { buf = decrypted_bufnr })
-      vim.api.nvim_create_autocmd("BufWriteCmd", {
-        buffer = decrypted_bufnr,
-        callback = function()
-          if
-            vim.api.nvim_get_option_value("modified", { buf = decrypted_bufnr }) ~= true
-          then
-            return
-          end
-          base.execute {
-            cmd = "encrypt",
-            args = { "--output", source_path },
-            writer = vim.api.nvim_buf_get_lines(decrypted_bufnr, 0, -1, false),
-          }
-
-          vim.api.nvim_set_option_value("modified", false, { buf = decrypted_bufnr })
-          vim.api.nvim_exec_autocmds("BufWritePost", { buffer = decrypted_bufnr })
-        end,
-      })
-
-      on_open_func(decrypted_bufnr)
+    local ok = false
+    if config.edit.encrypted and file_ext == "age" then
+      ok = M.__edit_encrypted(source_path, opts.targets[1])
     else
-      local ok, _ = pcall(vim.cmd.edit, source_path)
-      if ok then
-        on_open_func(bufnr)
-      else
-        notify.panic("Failed to open file " .. source_path)
-        return
-      end
+      ok, _ = pcall(vim.cmd.edit, source_path)
+    end
+
+    local bufnr = vim.api.nvim_get_current_buf()
+    if ok then
+      on_open_func(bufnr)
+    else
+      notify.panic("Failed to open file " .. source_path)
+      return
     end
 
     if custom_opts.watch then
-      local bufnr = vim.api.nvim_get_current_buf()
       M.watch(bufnr, custom_opts.force)
     end
   end
