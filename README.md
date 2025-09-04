@@ -30,6 +30,8 @@
 {
   'xvzc/chezmoi.nvim',
   dependencies = { 'nvim-lua/plenary.nvim' },
+  -- Load on BufReadPre to ensure auto_readd can watch all files
+  event = { "BufReadPre", "BufNewFile" },
   config = function()
     require("chezmoi").setup {
       -- your configurations
@@ -158,6 +160,8 @@ require("chezmoi").setup({
   },
 })
 ```
+
+**Important**: Make sure your plugin loads on `BufReadPre` or `BufNewFile` events (see Installation section) so auto re-add can monitor all files, not just source files.
 
 Now when you edit any managed file:
 
