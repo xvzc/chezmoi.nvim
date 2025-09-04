@@ -23,8 +23,11 @@ function M.readd_file(file_path, config)
     cmd = "re-add",
     targets = { file_path },
     on_stderr = function(_, data)
-      if data and #data > 0 then
-        notify.error("Failed to re-add: " .. table.concat(data, " "))
+      if data then
+        local msg = type(data) == "table" and table.concat(data, " ") or data
+        if msg and msg ~= "" then
+          notify.error("Failed to re-add: " .. msg)
+        end
       end
     end,
   }
