@@ -10,6 +10,12 @@
 ## What Is chezmoi.nvim?
 `chezmoi.nvim` is a plugin designed to assist in editing and applying chezmoi-managed files within `neovim`. A notable distinction from the command line tool `chezmoi` is that `chezmoi.nvim` utilizes built-in neovim functions for file editing, allowing us to edit and watch multiple files simultaneously.
 
+### Key Features
+- **Bidirectional sync**: Edit source files and auto-apply to deployed locations, or edit deployed files and auto re-add to source
+- **Multiple file handling**: Edit and watch multiple files simultaneously using neovim's built-in functions
+- **Telescope integration**: Browse and select chezmoi-managed files with fuzzy finding
+- **Flexible notifications**: Configurable notifications for all operations
+
 ## Getting Started
 ### Requirements
 - [Neovim (v0.9.0)](https://github.com/neovim/neovim/releases/tag/v0.9.0) or the latest version
@@ -62,6 +68,24 @@
       },
     },
   },
+  auto_readd = {
+    enable = false,  -- Enable automatic re-add for managed files
+    source_dir = nil,  -- Optional: custom chezmoi source directory
+    watch_notification = {
+      enable = true,
+      msg = "chezmoi: watching %s for re-add",
+      opts = {
+        title = "chezmoi.nvim",
+      },
+    },
+    notification = {
+      enable = true,
+      msg = "chezmoi: re-added %s to source",
+      opts = {
+        title = "chezmoi.nvim",
+      },
+    },
+  },
   telescope = {
     select = { "<CR>" },
   },
@@ -103,6 +127,71 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
 }
 
 ```
+
+## Auto Re-add
+
+Automatically re-add managed files to chezmoi source when you save them. This feature allows you to edit deployed dotfiles directly (e.g., `~/.bashrc`) and have your changes automatically captured back to the chezmoi source directory.
+
+### Why Use Auto Re-add?
+
+When using chezmoi, you typically need to either:
+1. Remember to use `chezmoi edit <file>` to edit the source version
+2. Edit the deployed file and manually run `chezmoi re-add <file>` afterward
+
+Auto re-add eliminates this friction by automatically detecting when you edit a chezmoi-managed file and running `re-add` on save.
+
+### How It Works
+
+1. When you open a file, the plugin checks if it's managed by chezmoi
+2. If managed (and not already in the source directory), it sets up a `BufWritePost` autocmd
+3. On save, it runs `chezmoi re-add <file>` to update the source
+4. Shows notifications to confirm the action
+
+### Basic Usage
+
+Enable the feature in your configuration:
+
+```lua
+require("chezmoi").setup({
+  auto_readd = {
+    enable = true,
+  },
+})
+```
+
+Now when you edit any managed file:
+
+```bash
+nvim ~/.bashrc
+# Shows: "chezmoi: watching ~/.bashrc for re-add"
+
+# Make your changes and save
+:w
+# Shows: "chezmoi: re-added ~/.bashrc to source"
+```
+
+### Complete Bidirectional Workflow
+
+For a seamless bidirectional workflow, enable both auto-apply and auto re-add:
+
+```lua
+require("chezmoi").setup({
+  -- Auto-apply when editing source files
+  edit = {
+    watch = true,
+    force = false,
+  },
+  -- Auto re-add when editing deployed files
+  auto_readd = {
+    enable = true,
+  },
+})
+```
+
+With this configuration:
+- Edit `~/.local/share/chezmoi/dot_bashrc` → automatically applies to `~/.bashrc`
+- Edit `~/.bashrc` → automatically re-adds to source
+- You can edit either version and stay synchronized
 
 ### Telescope Integration
 ```lua
