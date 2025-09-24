@@ -40,6 +40,13 @@ function M.watch(bufnr, force)
   force = force or config.edit.force
 
   local source_path = vim.api.nvim_buf_get_name(bufnr)
+  
+  -- Check if this file should be ignored
+  if util.should_ignore_file(source_path, config.edit.ignore_patterns) then
+    log.info("Skipping watch setup for ignored file: " .. vim.fn.fnamemodify(source_path, ":t"))
+    return
+  end
+
   local status_err = nil
   status.execute {
     args = {

@@ -5,6 +5,15 @@ local default_config = {
   edit = {
     watch = false,
     force = false,
+    ignore_patterns = {
+      "run_onchange_.*",
+      "run_once_.*", 
+      "%.chezmoiignore",
+      "%.chezmoitemplate",
+      "%.chezmoiexternal.*",
+      "%.chezmoiroot",
+      "%.chezmoiversion",
+    },
   },
   events = {
     on_open = {

@@ -83,4 +83,24 @@ function M.__arr_contains_one_of(tbl, values)
   return false
 end
 
+--- Check if a filename matches any of the ignore patterns
+---@param filename string
+---@param patterns string[]
+---@return boolean
+function M.should_ignore_file(filename, patterns)
+  if not patterns or vim.tbl_isempty(patterns) then
+    return false
+  end
+
+  local basename = vim.fn.fnamemodify(filename, ":t")
+  
+  for _, pattern in ipairs(patterns) do
+    if string.match(basename, pattern) then
+      return true
+    end
+  end
+  
+  return false
+end
+
 return M
