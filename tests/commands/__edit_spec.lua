@@ -39,24 +39,35 @@ end)
 
 -- Add test cases for the ignore patterns functionality
 
-describe("edit command ignore patterns", function()
+describe("util.str_matches_any_of", function()
   local util = require("chezmoi.util")
   
-  it("should ignore run_onchange files", function()
-    local filename = "/path/to/run_onchange_install_packages.sh"
+  it("should match run_onchange files", function()
+    local filename = "run_onchange_install_packages.sh"
     local patterns = {"run_onchange_.*"}
-    assert.is_true(util.should_ignore_file(filename, patterns))
+    assert.is_true(util.str_matches_any_of(filename, patterns))
   end)
   
-  it("should ignore .chezmoiignore files", function()
-    local filename = "/path/to/.chezmoiignore"
+  it("should match .chezmoiignore files", function()
+    local filename = ".chezmoiignore"
     local patterns = {"%.chezmoiignore"}
-    assert.is_true(util.should_ignore_file(filename, patterns))
+    assert.is_true(util.str_matches_any_of(filename, patterns))
   end)
   
-  it("should not ignore regular files", function()
-    local filename = "/path/to/dot_vimrc"
+  it("should not match regular files", function()
+    local filename = "dot_vimrc"
     local patterns = {"run_onchange_.*", "%.chezmoiignore"}
-    assert.is_false(util.should_ignore_file(filename, patterns))
+    assert.is_false(util.str_matches_any_of(filename, patterns))
+  end)
+  
+  it("should return false with empty patterns", function()
+    local filename = "run_onchange_test.sh"
+    local patterns = {}
+    assert.is_false(util.str_matches_any_of(filename, patterns))
+  end)
+  
+  it("should return false with nil patterns", function()
+    local filename = "run_onchange_test.sh"
+    assert.is_false(util.str_matches_any_of(filename, nil))
   end)
 end)
