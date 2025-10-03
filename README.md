@@ -40,6 +40,13 @@
     force = false,
     -- Edit Age encrypted files
     encrypted = false,
+    ignore_patterns = {
+      "run_onchange_.*",
+      "run_once_.*", 
+      "%.chezmoiignore",
+      "%.chezmoitemplate",
+      -- Add custom patterns here
+    },
   },
   events = {
     on_open = {
@@ -69,6 +76,8 @@
   },
 }
 ```
+
+The `ignore_patterns` option accepts Lua patterns to match against filenames. Files matching these patterns will not trigger automatic `chezmoi apply` when saved, even if watch mode is enabled.
 
 ### Automatically Running `chezmoi apply` In Specific Directories
 The below configuration will allow you to automatically apply changes on files under chezmoi source path.

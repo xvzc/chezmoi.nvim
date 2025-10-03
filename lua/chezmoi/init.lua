@@ -6,6 +6,15 @@ local default_config = {
     watch = false,
     force = false,
     encrypted = false,
+    ignore_patterns = {
+      "run_onchange_.*",
+      "run_once_.*", 
+      "%.chezmoiignore",
+      "%.chezmoitemplate",
+      "%.chezmoiexternal.*",
+      "%.chezmoiroot",
+      "%.chezmoiversion",
+    },
   },
   events = {
     on_open = {

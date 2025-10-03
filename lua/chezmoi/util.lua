@@ -83,4 +83,22 @@ function M.__arr_contains_one_of(tbl, values)
   return false
 end
 
+--- Check if a string matches any of the given patterns
+---@param str string
+---@param patterns string[]
+---@return boolean
+function M.str_matches_any_of(str, patterns)
+  if not patterns or vim.tbl_isempty(patterns) then
+    return false
+  end
+  
+  for _, pattern in ipairs(patterns) do
+    if string.match(str, pattern) then
+      return true
+    end
+  end
+  
+  return false
+end
+
 return M
