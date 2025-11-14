@@ -19,7 +19,7 @@ function commands.apply(opts)
 end
 
 ---@return string[]
----@param opts { targets: string|string[], args: string[] }
+---@param opts { targets: string|string[]?, args: string[] }
 function commands.list(opts)
   return require("chezmoi.commands.__list").execute(opts)
 end
