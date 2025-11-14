@@ -2,7 +2,7 @@ local M = {}
 
 -- Pick chezmoi files with snacks.picker
 -- Copy of the lazyvim function with optional opts
----@param opts { targets: string|string[]?, args: string[]? }
+---@param opts? { targets: string|string[]?, args: string[]? }
 function M.snacks(opts)
   opts = opts or {}
   local default_args = {
@@ -42,7 +42,7 @@ function M.snacks(opts)
 end
 
 -- Function to pick chezmoi files with mini.pick
----@param opts { targets: string|string[]?, args: string[]? }
+---@param opts? { targets: string|string[]?, args: string[]? }
 M.mini = function(opts)
   opts = opts or {}
   local default_args = {
@@ -83,7 +83,7 @@ end
 
 -- Pick chezmoi files with fzf-lua
 -- Copy of the lazyvim function with optional opts
----@param opts { targets: string|string[]?, args: string[]? }
+---@param opts? { targets: string|string[]?, args: string[]? }
 M.fzf = function(opts)
   opts = opts or {}
   local default_args = {
@@ -102,7 +102,7 @@ M.fzf = function(opts)
   local makestr = function(obj)
     if type(obj) == "table" then
       obj = " " .. table.concat(obj, " ")
-    elseif type(obj) == "str" then
+    elseif type(obj) == "string" then
       obj = " " .. obj
     elseif obj == nil then
       obj = ""
