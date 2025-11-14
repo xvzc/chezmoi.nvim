@@ -5,4 +5,3 @@ return telescope.register_extension({
     find_files= require("telescope._extensions.find_files").execute
   }
 })
-
