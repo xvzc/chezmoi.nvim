@@ -119,6 +119,11 @@ M.fzf = function(opts)
   }
 end
 
+-- Pick chezmoi files with telescope
+-- Wraps the telescope extension to provide a common API with other pickers
+M.telescope = function(opts)
+  require("telescope").extensions.chezmoi.find_files(opts)
+end
 
 
 return M
