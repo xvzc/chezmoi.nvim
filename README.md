@@ -15,7 +15,11 @@
 - [Neovim (v0.9.0)](https://github.com/neovim/neovim/releases/tag/v0.9.0) or the latest version
 - [nvim-lua/plenary.nvim](https://github.com/nvim-lua/plenary.nvim)
 - [chezmoi](https://github.com/twpayne/chezmoi) latest version
-- [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) (optional)
+- Optionally, one of the following pickers:
+  - [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) (optional)
+  - [mini.pick](https://github.com/nvim-mini/mini.nvim/blob/main/readmes/mini-pick.md), part of [mini.nvim](https://github.com/nvim-mini/mini.nvim)
+  - [snacks.picker](https://github.com/folke/snacks.nvim/blob/main/docs/picker.md), part of [snacks.nvim](https://github.com/folke/snacks.nvim/)
+  - [fzf-lua](https://github.com/ibhagwan/fzf-lua)
 
 ### Installation
 
@@ -113,24 +117,26 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
 
 ```
 
-### Telescope Integration
+### Picker Integration
+`chezmoi.nvim` provides wrappers for the most common picker plugins, namely [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim), [mini.pick](https://github.com/nvim-mini/mini.nvim/blob/main/readmes/mini-pick.md),  [snacks.picker](https://github.com/folke/snacks.nvim/blob/main/docs/picker.md), and [fzf-lua](https://github.com/ibhagwan/fzf-lua).
+
+They are all accessible through `require("chezmoi.pick")`. This module contains four functions: `snacks`, `fzf`, `mini` and `telescope`.
+They all share the same signature: they accept an `opts` argument with two elements:
+
+- `targets`: the path(s) to search with chezmoi
+- `args`: the command line arguments to give the `chezmoi managed` command. These should be passed as a table, see the example below
+
+Here is an example with `telescope`. You could replace telescope with any of the pickers mentioned above.
+
 ```lua
--- telscope-config.lua
-local telescope = require("telescope")
+-- Search all chezmoi files
+vim.keymap.set('n', '<leader>cz', function() require("chezmoi.pick").telescope() end)
 
-telescope.setup {
-  -- ... your telescope config
-}
-
-telescope.load_extension('chezmoi')
-vim.keymap.set('n', '<leader>cz', telescope.extensions.chezmoi.find_files, {})
-
--- You can also search a specific target directory and override arguments
--- Here is an example with the default args
+-- Search only neovim config files
+-- The default chezmoi CLI args for the telescope picker are used as an example
 vim.keymap.set('n', '<leader>fc', function()
-  telescope.extensions.chezmoi.find_files({
+  require("chezmoi.pick").telescope({
     targets = vim.fn.stdpath("config"),
-    -- This overrides the default arguments used with 'chezmoi list'
     args = { 
       "--path-style",
       "absolute",
@@ -140,7 +146,7 @@ vim.keymap.set('n', '<leader>fc', function()
       "externals",
     }
   })
-end, {})
+end)
 ```
 
 ## User Commands
