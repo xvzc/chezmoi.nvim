@@ -1,10 +1,10 @@
 local M = {}
 
 -- Pick chezmoi files with snacks.picker
--- Copy of the lazyvim function with optional opts
----@param opts? { targets: string|string[]?, args: string[]? }
-function M.snacks(opts)
-  opts = opts or {}
+-- Copy of the lazyvim function with optional targets and args
+---@param targets? string|string[] Optional target files or patterns
+---@param args? string[] Optional command arguments
+function M.snacks(targets, args)
   local default_args = {
     "--path-style",
     "absolute",
@@ -13,9 +13,9 @@ function M.snacks(opts)
     "--exclude",
     "externals",
   }
-  local args = opts.args or default_args
+  args = args or default_args
   local results = require("chezmoi.commands").list {
-    targets = opts.targets,
+    targets = targets,
     args = args,
   }
   local items = {}
@@ -42,18 +42,18 @@ function M.snacks(opts)
 end
 
 -- Function to pick chezmoi files with mini.pick
----@param opts? { targets: string|string[]?, args: string[]? }
-M.mini = function(opts)
-  opts = opts or {}
+---@param targets? string|string[] Optional target files or patterns
+---@param args? string[] Optional command arguments
+M.mini = function(targets, args)
   local default_args = {
     "--include",
     "files",
     "--exclude",
     "externals",
   }
-  local args = opts.args or default_args
+  args = args or default_args
   local results = require("chezmoi.commands").list {
-    targets = opts.targets,
+    targets = targets,
     args = args,
   }
 
@@ -82,16 +82,15 @@ M.mini = function(opts)
 end
 
 -- Pick chezmoi files with fzf-lua
--- Copy of the lazyvim function with optional opts
----@param opts? { targets: string|string[]?, args: string[]? }
-M.fzf = function(opts)
-  opts = opts or {}
+-- Copy of the lazyvim function with optional targets and args
+---@param targets? string|string[] Optional target files or patterns
+---@param args? string[] Optional command arguments
+M.fzf = function(targets, args)
   local default_args = {
     "--include",
     "files,symlinks",
   }
-  local args = opts.args or default_args
-  local targets = opts.targets
+  args = args or default_args
 
   local fzf_lua = require "fzf-lua"
   local actions = {
@@ -121,7 +120,13 @@ end
 
 -- Pick chezmoi files with telescope
 -- Wraps the telescope extension to provide a common API with other pickers
-M.telescope = function(opts)
+---@param targets? string|string[] Optional target files or patterns (passed as opts.targets)
+---@param args? string[] Optional command arguments (passed as opts.args)
+M.telescope = function(targets, args)
+  local opts = {
+    targets = targets,
+    args = args,
+  }
   require("telescope").extensions.chezmoi.find_files(opts)
 end
 

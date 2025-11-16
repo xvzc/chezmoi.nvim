@@ -121,7 +121,7 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
 `chezmoi.nvim` provides wrappers for the most common picker plugins, namely [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim), [mini.pick](https://github.com/nvim-mini/mini.nvim/blob/main/readmes/mini-pick.md),  [snacks.picker](https://github.com/folke/snacks.nvim/blob/main/docs/picker.md), and [fzf-lua](https://github.com/ibhagwan/fzf-lua).
 
 They are all accessible through `require("chezmoi.pick")`. This module contains four functions: `snacks`, `fzf`, `mini` and `telescope`.
-They all share the same signature: they accept an `opts` argument with two elements:
+They all share the same signature with two arguments:
 
 - `targets`: the path(s) to search with chezmoi
 - `args`: the command line arguments to give the `chezmoi managed` command. These should be passed as a table, see the example below
@@ -135,7 +135,7 @@ vim.keymap.set('n', '<leader>cz', function() require("chezmoi.pick").telescope()
 -- Search only neovim config files
 -- The default chezmoi CLI args for the telescope picker are used as an example
 vim.keymap.set('n', '<leader>fc', function()
-  require("chezmoi.pick").telescope({
+  require("chezmoi.pick").telescope(
     targets = vim.fn.stdpath("config"),
     args = { 
       "--path-style",
@@ -145,7 +145,7 @@ vim.keymap.set('n', '<leader>fc', function()
       "--exclude",
       "externals",
     }
-  })
+  )
 end)
 ```
 
