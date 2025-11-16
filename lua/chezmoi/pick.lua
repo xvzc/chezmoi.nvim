@@ -2,6 +2,8 @@ local M = {}
 
 -- Pick chezmoi files with snacks.picker
 -- Copy of the lazyvim function with optional targets and args
+-- https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/plugins/extras/util/chezmoi.lua
+-- Under Apache 2.0 License (https://github.com/LazyVim/LazyVim/blob/main/LICENSE)
 ---@param targets? string|string[] Optional target files or patterns
 ---@param args? string[] Optional command arguments
 function M.snacks(targets, args)
@@ -83,6 +85,8 @@ end
 
 -- Pick chezmoi files with fzf-lua
 -- Copy of the lazyvim function with optional targets and args
+-- https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/plugins/extras/util/chezmoi.lua
+-- Under Apache 2.0 License (https://github.com/LazyVim/LazyVim/blob/main/LICENSE)
 ---@param targets? string|string[] Optional target files or patterns
 ---@param args? string[] Optional command arguments
 M.fzf = function(targets, args)
