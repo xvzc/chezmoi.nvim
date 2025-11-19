@@ -5,6 +5,7 @@ local default_config = {
   edit = {
     watch = false,
     force = false,
+    encrypted = false,
     ignore_patterns = {
       "run_onchange_.*",
       "run_once_.*", 

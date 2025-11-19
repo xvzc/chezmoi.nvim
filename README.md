@@ -40,6 +40,8 @@ Edit your chezmoi-managed files and automatically apply.
   edit = {
     watch = false,
     force = false,
+    -- Edit Age encrypted files
+    encrypted = false,
     ignore_patterns = {
       "run_onchange_.*",
       "run_once_.*", 
@@ -80,7 +82,7 @@ Edit your chezmoi-managed files and automatically apply.
 The `ignore_patterns` option accepts Lua patterns to match against filenames. Files matching these patterns will not trigger automatic `chezmoi apply` when saved, even if watch mode is enabled.
 
 ### Automatically Running `chezmoi apply` In Specific Directories
-The below configuration wll allow you to automatically apply changes on files under chezmoi source path.
+The below configuration will allow you to automatically apply changes on files under chezmoi source path.
 ```lua
 --  e.g. ~/.local/share/chezmoi/*
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
@@ -171,7 +173,7 @@ print(vim.inspect(managed_files))
 
 ### Edit
 ```lua
--- NOTE: chezmoi.nvim utilizes builtin neovim functions for file editing instead of `chzmoi edit`
+-- NOTE: chezmoi.nvim utilizes builtin neovim functions for file editing instead of `chezmoi edit`
 require("chezmoi.commands").edit({
     targets = { "~/.zshrc" },
     args = { "--watch" }
