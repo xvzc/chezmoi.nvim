@@ -98,8 +98,8 @@ M.fzf = function(targets, args)
 
   local fzf_lua = require "fzf-lua"
   local actions = {
-    ["enter"] = function(selected)
-      fzf_lua.actions.vimcmd_entry("ChezmoiEdit", selected, { cwd = vim.env.HOME })
+    ["enter"] = function(selected, opts)
+      fzf_lua.actions.vimcmd_entry("ChezmoiEdit", selected, opts)
     end,
   }
   local makestr = function(obj)
@@ -115,10 +115,9 @@ M.fzf = function(targets, args)
   targets = makestr(targets)
   local args_str = makestr(args)
   fzf_lua.files {
-    cmd = "chezmoi managed" .. args_str .. targets,
+    raw_cmd = "chezmoi managed" .. args_str .. targets,
     actions = actions,
     cwd = vim.env.HOME,
-    hidden = false,
   }
 end
 
