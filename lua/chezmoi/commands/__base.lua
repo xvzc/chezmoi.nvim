@@ -12,12 +12,14 @@ local M = {}
 ---@field args? string[]
 ---@field on_exit? fun(code: number, signal: number)
 ---@field on_stderr? fun(error: string, data: string)
+---@field writer? Job|table|string
 
 ---@param opts Options
 function M.execute(opts)
   opts = opts or {}
   opts.targets = opts.targets or {}
   opts.args = opts.args or {}
+  opts.writer = opts.writer or {}
   for _, v in ipairs(config.extra_args) do
     table.insert(opts.args, v)
   end
@@ -43,6 +45,7 @@ function M.execute(opts)
     args = vim.iter({ opts.cmd, opts.targets, opts.args }):flatten():totable(),
     on_stderr = opts.on_stderr or on_stderr_default,
     on_exit = opts.on_exit,
+    writer = opts.writer,
   }
 
   job:sync()
